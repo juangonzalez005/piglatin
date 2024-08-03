@@ -1,30 +1,45 @@
 '''main program functions'''
 vowels=["a","e","i","o","u"]
-#function checkwords(wordlist) is the function that uses selection statements to see how each word in the list should be treated when translated
-def checkwords(wordlist):
-  for wordindex in range(len(wordlist)): #loop through the list of words
-    lastcharacter=wordlist[wordindex][len(wordlist[wordindex])-1]#store the last character
-    if lastcharacter=="," or lastcharacter==";" or lastcharacter=="." or lastcharacter=="!" or lastcharacter=="?" or lastcharacter==":":#this ensures that punctuation does not move in the word
-      punctuation=lastcharacter
-      wordlist[wordindex]=wordlist[wordindex].replace(punctuation, "")
-      wordlist[wordindex]=piglatinify(wordlist[wordindex])
-      wordlist[wordindex]+=punctuation
-    else: #for normal words, just translate
-        wordlist[wordindex]=piglatinify(wordlist[wordindex])
-    if wordindex==0:#first word should be translated and capitalized
-      wordlist[wordindex]=wordlist[wordindex].capitalize()
-  #print(wordlist)
+punctuation=[".",",","!","?"]
+threeLetterCombinations= ["str", "thr", "spr", "sch", "scr", "shr", "spl", "squ", "str", "thr", "spr", "sch"]
+twoLetterCombinations = ["bl", "br", "ch", "cl", "cr", "dr", "fl", "sw" "fr", "gl", "gr", "ph", "pl", "pr", "qu", "sc", "sh", "sk", "sl", "sm", "sn", "sp", "st", "th", "tr", "tw", "wh", "wr"]
 
-#function piglatinify rotates the word left and adds "ay" to the end. if the word begins with a vowel, just add "ay" to it
-def piglatinify(string):
+#function CheckWords(wordlist) is the function that uses selection statements to see how each word in the list should be treated when translated 
+
+def CheckWords(wordList):
+  global punctuation
+  for wordindex in range(len(wordList)):
+    word = wordList[wordindex]
+    lastCharacter = word[len(word)-1]
+    if lastCharacter in punctuation:
+      word = word[0:len(word)-1]
+      word = PigLatinify(word)
+      wordList[wordindex] = word + lastCharacter
+    else:
+      word = PigLatinify(word)
+      wordList[wordindex] = word
+    if wordindex == 0:
+      wordList[0] = wordList[0].capitalize()
+
+#function PigLatinify rotates the word left and adds "ay" to the end. if the word begins with a vowel, just add "ay" to it
+def PigLatinify(string):
   global vowels
+  global threeLetterCombinations
+  global twoLetterCombinations
+
+  for combi in threeLetterCombinations:
+    if string.lower().startswith(combi):
+      string = string[3:] + string[0:3] + "ay"
+      return string.lower()
+  for combi in twoLetterCombinations:
+    if string.lower().startswith(combi):
+      string = string[2:] + string[0:2] + "ay"
+      return string.lower()
+
   if string[0].lower() not in vowels:
-    wordarray=buildarray(string)
-    firstletter=wordarray.pop(0)
-    wordarray.append(firstletter)
-    return buildstring(wordarray)+"ay"
-  else:
-    return string+"ay"
+    string = string[1:] + string[0]
+  return string.lower() + "ay"
+    
 
 '''simple helper functions'''
 def buildstring(list): #converts array to string to help with manipulation
@@ -43,7 +58,7 @@ def buildarray(string): #converts string to array to help with manipulation
 sentence=input("Please input a complete sentence.\n")
 wordList=sentence.split(" ")
 #wordList is the list that holds each word from the sentence
-checkwords(wordList) #this checks each word for punctuation and then inside calls piglatinify to translate
+CheckWords(wordList) #this checks each word for punctuation and then inside calls PigLatinify to translate
 print("")
 print("The translated PigLatin sentence is: ")
 finalsentence=" ".join(wordList)
